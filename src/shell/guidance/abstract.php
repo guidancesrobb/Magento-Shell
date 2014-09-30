@@ -89,7 +89,7 @@ abstract class Guidance_Shell_Abstract extends Mage_Shell_Abstract
      */
     public function __construct()
     {
-        $this->_timeStart = microtime(true);        
+        $this->_timeStart = (float)microtime(true);        
         parent::__construct();
     }
 
