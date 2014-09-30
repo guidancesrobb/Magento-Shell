@@ -1,3 +1,5 @@
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/guidancesrobb/Magento-Shell/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/guidancesrobb/Magento-Shell/?branch=master)
+
 # Magento Shell Scripts
 
 ## Features
