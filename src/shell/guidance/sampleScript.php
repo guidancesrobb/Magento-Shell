@@ -34,6 +34,11 @@ class Guidance_Shell_SampleScript extends Guidance_Shell_Abstract
     protected $_debug = true;
 
     /**
+     * File to log output to, leave blank for no logging
+     */
+    protected $_logFile = 'guidanceShellSampleScript.log';
+
+    /**
      * Do the thing
      * 
      * @return void
@@ -46,7 +51,20 @@ class Guidance_Shell_SampleScript extends Guidance_Shell_Abstract
         $this->debug('Found ' . $count . ' product(s) to process');
         $i = 0;
         foreach ($products as $product) {
-            $this->progress('Processing product id: ' . $product->getId(), ++$i, $count, 1);
+            $this->progress(
+                'Processing product id: ' . $product->getId(),
+                ++$i,
+                $count,
+                1
+            );
+            // $product->setDescription(Mage::helper('core')->stripTags($product->getDescription()));
+            $this->debug('Sanitizing product description...', 2);
+            if (mt_rand(0, 19) > 1) { // try
+                // $product->save();
+                $this->success('Product saved', 2);
+            } else { // catch                
+                $this->error('An error occured while saving this product', 2);
+            }
         }
         $this->debug('Script execution is complete');
     }

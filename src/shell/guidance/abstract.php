@@ -39,15 +39,58 @@ abstract class Guidance_Shell_Abstract extends Mage_Shell_Abstract
     protected $_logFile = 'guidanceShell.log';
 
     /**
+     * Storage for shell colours
+     * @var array
+     */
+    protected $_color = array(
+        'black'        => '0;30',
+        'dark_gray'    => '1;30',
+        'blue'         => '0;34',
+        'light_blue'   => '1;34',
+        'green'        => '0;32',
+        'light_green'  => '1;32',
+        'cyan'         => '0;36',
+        'light_cyan'   => '1;36',
+        'red'          => '0;31',
+        'light_red'    => '1;31',
+        'purple'       => '0;35',
+        'light_purple' => '1;35',
+        'brown'        => '0;33',
+        'yellow'       => '1;33',
+        'light_gray'   => '0;37',
+        'white'        => '1;37'
+    );
+
+    /**
+     * Storage for shell colours
+     * @var array
+     */
+    protected $_colorBg = array(
+        'black'      => '40',
+        'red'        => '41',
+        'green'      => '42',
+        'yellow'     => '43',
+        'blue'       => '44',
+        'magenta'    => '45',
+        'cyan'       => '46',
+        'light_gray' => '47'
+    );
+
+    /**
      * Holds the time execution started
      * @var float
      */
     private $_timeStart;
 
+    /**
+     * Captures the execution start time
+     *
+     * @return void
+     */
     public function __construct()
     {
+        $this->_timeStart = microtime(true);        
         parent::__construct();
-        $this->_timeStart = microtime(true);
     }
 
     /**
@@ -60,7 +103,7 @@ abstract class Guidance_Shell_Abstract extends Mage_Shell_Abstract
     public function debug($message, $indent = 0)
     {
         if ($this->_debug) {
-            $this->out($message, $indent);
+            $this->out($this->color($message, 'cyan'), $indent);
         }
     }
 
@@ -75,9 +118,37 @@ abstract class Guidance_Shell_Abstract extends Mage_Shell_Abstract
      */
     public function progress($string, $i, $count, $indent = 0)
     {
-        $this->debug(
-            $string . ' (' . $i . '/' . $count . ' ' . round($i / $count * 100, 2) . '%)', $indent
-        );
+        if ($this->_debug) {
+            $percent = ' (' . $i . '/' . $count . ' '
+                . round($i / $count * 100, 2) . '%)';
+            $this->out($string . $this->color($percent, 'yellow'), $indent);
+        }
+    }
+
+    /**
+     * Displays a success message
+     * 
+     * @param  string  $message
+     * @param  integer $indent
+     * @return void
+     */
+    public function success($message, $indent = 0)
+    {
+        if ($this->_debug) {
+            $this->out($this->color($message, 'green'), $indent);
+        }
+    }
+
+    /**
+     * Displays an error message
+     * 
+     * @param  string  $message
+     * @param  integer $indent
+     * @return void
+     */
+    public function error($message, $indent = 0)
+    {
+        $this->out($this->color($message, 'white', 'red'), $indent);
     }
 
     /**
@@ -89,7 +160,6 @@ abstract class Guidance_Shell_Abstract extends Mage_Shell_Abstract
      */
     public function out($message, $indent = 0)
     {
-        $time = '';
         $time = microtime(true) - $this->_timeStart;
         if ($time > 60 * 60) {
             $time /= 60 * 60;
@@ -106,7 +176,36 @@ abstract class Guidance_Shell_Abstract extends Mage_Shell_Abstract
         $message = str_repeat(' ', $indent * 4) . $message;
         echo $time . $message . PHP_EOL;
         if ($this->_logFile) {
-            Mage::log($message, null, $this->_logFile, true);
+            Mage::log(
+                preg_replace('/\\033.?\[([0-9]+|\;?)+m/', '', $message),
+                null,
+                $this->_logFile,
+                true
+            );
         }
+    }
+
+    /**
+     * Adds color to a string for terminal output
+     * 
+     * @param  string $string
+     * @param  string $foreground
+     * @param  string $background
+     * @return string
+     */
+    public function color($string, $foreground = null, $background = null)
+    {
+        $coloredString = '';
+        // Check if given foreground color found
+        if (isset($this->_color[$foreground])) {
+            $coloredString .= "\033[" . $this->_color[$foreground] . "m";
+        }
+        // Check if given background color found
+        if (isset($this->_colorBg[$background])) {
+            $coloredString .= "\033[" . $this->_colorBg[$background] . "m";
+        }
+        // Add string and end coloring
+        $coloredString .=  $string . "\033[0m";
+        return $coloredString;
     }
 }
