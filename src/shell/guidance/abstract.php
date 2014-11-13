@@ -108,24 +108,6 @@ abstract class Guidance_Shell_Abstract extends Mage_Shell_Abstract
     }
 
     /**
-     * Shows progress when iterating
-     * 
-     * @param  string  $string
-     * @param  integer $i
-     * @param  integer $count
-     * @param  integer $indent
-     * @return void
-     */
-    public function progress($string, $i, $count, $indent = 0)
-    {
-        if ($this->_debug) {
-            $percent = ' (' . $i . '/' . $count . ' '
-                . round($i / $count * 100, 2) . '%)';
-            $this->out($string . $this->color($percent, 'yellow'), $indent);
-        }
-    }
-
-    /**
      * Displays a success message
      * 
      * @param  string  $message
@@ -181,6 +163,28 @@ abstract class Guidance_Shell_Abstract extends Mage_Shell_Abstract
                 null,
                 $this->_logFile,
                 true
+            );
+        }
+    }
+
+    /**
+     * Display progress notification
+     * 
+     * @param  integer $step
+     * @param  integer $total
+     * @param  integer $indent
+     * @return void
+     */
+    public function progress($step, $total, $indent = 0)
+    {
+        if ($this->_debug) {
+            $this->out(
+                $this->color(
+                    'Progress: ' . $step . '/' . $total . ' ('
+                        . round($step / $total * 100, 2) . '%)',
+                    'yellow'
+                ),
+                $indent
             );
         }
     }
