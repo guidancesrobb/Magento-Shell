@@ -8,7 +8,7 @@
 * Shell output is automatically logged to file
 * Execution timer
 
-## Installion
+## Installation
 
 Copy the contents of `src/` to your Magento installation.
 
